@@ -1,0 +1,15 @@
+txn-mapping:
+  mappings:
+    PAYMENT:
+      transaction:
+        txn_id:
+          source: generated
+          required: true
+        txn_type:
+          source: constant
+          value: PAYMENT
+          required: true
+        amount:
+          source: json
+          path: $.amount
+          required: true
