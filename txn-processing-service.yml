@@ -1,0 +1,75 @@
+txn-mapping:
+  mappings:
+
+    PAYMENT:
+      transaction:
+        txn_id:
+          source: generated
+          required: true
+        txn_type:
+          source: constant
+          value: PAYMENT
+          required: true
+        amount:
+          source: json
+          path: $.amount
+          required: true
+        currency:
+          source: json
+          path: $.currency
+          required: true
+        source_system:
+          source: json
+          path: $.sourceSystem
+          required: true
+
+      transaction_details:
+        - column: customer_id
+          source: json
+          path: $.customerId
+          required: false
+        - column: channel
+          source: constant
+          value: MOBILE_APP
+          required: false
+
+      addresses:
+        expectedSize: 1
+        definitions:
+          - address_type: BILLING
+            address_id:
+              source: generated
+            jsonPath: $.billingAddress
+            fields:
+              line1:
+                source: json
+                path: $.line1
+                required: true
+              city:
+                source: json
+                path: $.city
+                required: true
+              country:
+                source: constant
+                value: INDIA
+                required: true
+
+    REFUND:
+      transaction:
+        txn_id:
+          source: generated
+          required: true
+        txn_type:
+          source: constant
+          value: REFUND
+          required: true
+        amount:
+          source: json
+          path: $.refundAmount
+          required: true
+
+      transaction_details:
+        - column: reason
+          source: json
+          path: $.reason
+          required: true
