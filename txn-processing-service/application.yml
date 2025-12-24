@@ -1,7 +1,6 @@
 txn-mapping:
   mappings:
 
-:
     PAYMENT:
       transaction:
         txn_id:
@@ -74,3 +73,4 @@ txn-mapping:
           source: json
           path: $.reason
           required: true
+
