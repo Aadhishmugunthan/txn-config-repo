@@ -34,7 +34,6 @@ txn-mapping:
           required: false
 
       addresses:
-        expectedSize: 1
         definitions:
           - address_type: BILLING
             address_id:
