@@ -1,0 +1,379 @@
+txn:
+  mappings:
+    PAYMENT:
+      transaction:
+        TXN_TYPE:
+          source: constant
+          value: PAYMENT
+          required: true
+          
+        AMOUNT:
+          source: json
+          path: $.amount
+          required: true
+          validation:
+            min: 0
+            max: 999999999
+            
+        CURRENCY:
+          source: json
+          path: $.currency
+          required: true
+          validation:
+            pattern: "^[A-Z]{3}$"  # ISO 4217
+            
+        SOURCE_SYSTEM:
+          source: json
+          path: $.sourceSystem
+          required: false
+          default: "MOBILE_APP"
+
+    
+    SENDER:
+      party:
+        PARTY_TYPE:
+          source: constant
+          value: SENDER
+          
+        FIRST_NAME:
+          source: json
+          path: $.sender.firstName
+          required: true
+          validation:
+            maxLength: 80
+            
+        LAST_NAME:
+          source: json
+          path: $.sender.lastName
+          required: true
+          validation:
+            maxLength: 80
+            
+        EMAIL:
+          source: json
+          path: $.sender.email
+          required: true
+          validation:
+            pattern: "^[A-Za-z0-9+_.-]+@(.+)$"
+            
+        PHONE:
+          source: json
+          path: $.sender.phone
+          required: false
+          validation:
+            pattern: "^\\+?[1-9]\\d{1,14}$"  # E.164 format
+            
+        CITY:
+          source: json
+          path: $.sender.city
+          required: false
+          
+        COUNTRY:
+          source: json
+          path: $.sender.country
+          required: true
+          validation:
+            pattern: "^[A-Za-z\\s]+$"
+
+      # Sender Address Mapping
+      address:
+        ADDR_TYPE:
+          source: constant
+          value: SENDER_BILLING
+          
+        STREET_LINE_1:
+          source: json
+          path: $.sender.address.streetLine1
+          required: true
+          validation:
+            maxLength: 250
+            
+        STREET_LINE_2:
+          source: json
+          path: $.sender.address.streetLine2
+          required: false
+          validation:
+            maxLength: 250
+            
+        CITY:
+          source: json
+          path: $.sender.address.city
+          required: true
+          
+        STATE:
+          source: json
+          path: $.sender.address.state
+          required: true
+          
+        COUNTRY:
+          source: json
+          path: $.sender.address.country
+          required: true
+          
+        POSTAL_CODE:
+          source: json
+          path: $.sender.address.postalCode
+          required: true
+          validation:
+            pattern: "^[0-9]{5,10}$"
+
+   
+    RECIPIENT:
+      party:
+        PARTY_TYPE:
+          source: constant
+          value: RECIPIENT
+          
+        FIRST_NAME:
+          source: json
+          path: $.recipient.firstName
+          required: true
+          validation:
+            maxLength: 80
+            
+        LAST_NAME:
+          source: json
+          path: $.recipient.lastName
+          required: true
+          validation:
+            maxLength: 80
+            
+        EMAIL:
+          source: json
+          path: $.recipient.email
+          required: true
+          validation:
+            pattern: "^[A-Za-z0-9+_.-]+@(.+)$"
+            
+        PHONE:
+          source: json
+          path: $.recipient.phone
+          required: false
+          
+        CITY:
+          source: json
+          path: $.recipient.city
+          required: false
+          
+        COUNTRY:
+          source: json
+          path: $.recipient.country
+          required: true
+
+      # Recipient Address Mapping
+      address:
+        ADDR_TYPE:
+          source: constant
+          value: RECIPIENT_SHIPPING
+          
+        STREET_LINE_1:
+          source: json
+          path: $.recipient.address.streetLine1
+          required: true
+          
+        STREET_LINE_2:
+          source: json
+          path: $.recipient.address.streetLine2
+          required: false
+          
+        CITY:
+          source: json
+          path: $.recipient.address.city
+          required: true
+          
+        STATE:
+          source: json
+          path: $.recipient.address.state
+          required: true
+          
+        COUNTRY:
+          source: json
+          path: $.recipient.address.country
+          required: true
+          
+        POSTAL_CODE:
+          source: json
+          path: $.recipient.address.postalCode
+          required: true
+
+    
+    TRANSACTION_DETAIL:
+      detail:
+        PAYMENT_REF:
+          source: json
+          path: $.paymentReference
+          required: true
+          
+        FUNDING_SOURCE:
+          source: json
+          path: $.fundingSource
+          required: true
+          validation:
+            allowed: 
+              - CREDIT_CARD
+              - DEBIT_CARD
+              - BANK_ACCOUNT
+              - UPI
+              - WALLET
+              
+        PAYMENT_TYPE:
+          source: json
+          path: $.paymentType
+          required: true
+          validation:
+            allowed:
+              - ONLINE
+              - OFFLINE
+              - RECURRING
+              - INSTANT
+              - WIRE_TRANSFER
+
+
+txn:
+  database:
+    tables:
+      SEND_TRANSACTIONS:
+        columns:
+          - name: TRAN_ID
+            mapping: $.transactionId
+            type: VARCHAR2
+            size: 50
+            
+          - name: TRAN_TYPE
+            mapping: $.transactionType
+            type: VARCHAR2
+            size: 10
+            
+          - name: TRAN_AMT
+            mapping: $.amount
+            type: NUMBER
+            
+          - name: TRAN_CURR
+            mapping: $.currency
+            type: VARCHAR2
+            size: 3
+            
+          - name: CUST_REF_NUM
+            mapping: $.customerReferenceNumber
+            type: VARCHAR2
+            size: 100
+            
+          - name: ORIG_INST_NAM
+            mapping: $.originatingInstitution
+            type: VARCHAR2
+            size: 250
+            
+          - name: TRANFR_ACPT_NAM
+            mapping: $.transferAcceptorName
+            type: VARCHAR2
+            size: 250
+
+      SEND_RECIP_DTL:
+        columns:
+          # Sender columns
+          - name: SEND_FIRST_NAM
+            mapping: $.sender.firstName
+            type: VARCHAR2
+            size: 80
+            
+          - name: SEND_LST_NAM
+            mapping: $.sender.lastName
+            type: VARCHAR2
+            size: 80
+            
+          - name: SEND_EMAIL
+            mapping: $.sender.email
+            type: VARCHAR2
+            size: 254
+            
+          - name: SEND_PHN
+            mapping: $.sender.phone
+            type: VARCHAR2
+            size: 20
+            
+          - name: SEND_CITY
+            mapping: $.sender.city
+            type: VARCHAR2
+            size: 50
+            
+          - name: SEND_CNTRY_NAM
+            mapping: $.sender.country
+            type: VARCHAR2
+            size: 20
+            
+          # Recipient columns
+          - name: RECIP_FIRST_NAM
+            mapping: $.recipient.firstName
+            type: VARCHAR2
+            size: 80
+            
+          - name: RECIP_LST_NAM
+            mapping: $.recipient.lastName
+            type: VARCHAR2
+            size: 80
+            
+          - name: RECIP_EMAIL
+            mapping: $.recipient.email
+            type: VARCHAR2
+            size: 254
+            
+          - name: RECIP_PHN
+            mapping: $.recipient.phone
+            type: VARCHAR2
+            size: 20
+            
+          - name: RECIP_CITY
+            mapping: $.recipient.city
+            type: VARCHAR2
+            size: 50
+            
+          - name: RECIP_CNTRY_NAM
+            mapping: $.recipient.country
+            type: VARCHAR2
+            size: 20
+
+      SEND_TRAN_ADDR_DTL:
+        columns:
+          - name: ID
+            mapping: generated
+            type: UUID
+            
+          - name: TRAN_ID
+            mapping: $.transactionId
+            type: VARCHAR2
+            size: 50
+            
+          - name: ADDR_TYPE
+            mapping: derived  # SENDER_* or RECIPIENT_*
+            type: VARCHAR2
+            size: 50
+            
+          - name: ST_LINE1
+            mapping: $.{party}.address.streetLine1
+            type: VARCHAR2
+            size: 250
+            
+          - name: ST_LINE2
+            mapping: $.{party}.address.streetLine2
+            type: VARCHAR2
+            size: 250
+            
+          - name: CITY
+            mapping: $.{party}.address.city
+            type: VARCHAR2
+            size: 60
+            
+          - name: ST
+            mapping: $.{party}.address.state
+            type: VARCHAR2
+            size: 60
+            
+          - name: CNTRY_NAM
+            mapping: $.{party}.address.country
+            type: VARCHAR2
+            size: 60
+            
+          - name: POST_CD
+            mapping: $.{party}.address.postalCode
+            type: VARCHAR2
+            size: 60
