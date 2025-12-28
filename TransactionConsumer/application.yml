@@ -1,74 +1,8 @@
-spring:
-  application:
-    name: TransactionConsumer
-  cloud:
-    config:
-      uri: http://localhost:8888
-      fail-fast: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh,health,info
-
-# Externalized Transaction Mappings
 txn:
   mappings:
-    PAYMENT:
-      transaction:
-        TXN_TYPE:
-          source: constant
-          value: PAYMENT
-          required: true
-          
-        AMOUNT:
-          source: json
-          path: $.amount
-          required: true
-          validation:
-            min: 0
-            max: 999999999
-            
-        CURRENCY:
-          source: json
-          path: $.currency
-          required: true
-          validation:
-            pattern: "^[A-Z]{3}$"
-            
-        SOURCE_SYSTEM:
-          source: json
-          path: $.sourceSystem
-          required: false
-          defaultValue: "MOBILE_APP"
-          
-        TRAN_ID:
-          source: json
-          path: $.transactionId
-          required: true
-          
-        CUST_REF_NUM:
-          source: json
-          path: $.customerReferenceNumber
-          required: false
-          
-        ORIG_INST_NAM:
-          source: json
-          path: $.originatingInstitution
-          required: false
-          
-        TRANFR_ACPT_NAM:
-          source: json
-          path: $.transferAcceptorName
-          required: false
-    
-    SENDER:
+    # ========== SENDER MAPPINGS (Parent Party) ==========
+    sender:
       party:
-        PARTY_TYPE:
-          source: constant
-          value: SENDER
-          
         FIRST_NAME:
           source: json
           path: $.sender.firstName
@@ -94,8 +28,6 @@ txn:
           source: json
           path: $.sender.phone
           required: false
-          validation:
-            pattern: "^\\+?[1-9]\\d{1,14}$"
             
         CITY:
           source: json
@@ -106,8 +38,6 @@ txn:
           source: json
           path: $.sender.country
           required: true
-          validation:
-            pattern: "^[A-Za-z\\s]+$"
 
       address:
         ADDR_TYPE:
@@ -147,15 +77,10 @@ txn:
           source: json
           path: $.sender.address.postalCode
           required: true
-          validation:
-            pattern: "^[0-9]{5,10}$"
-   
-    RECIPIENT:
+
+    # ========== RECIPIENT MAPPINGS (Child Party) ==========
+    recipient:
       party:
-        PARTY_TYPE:
-          source: constant
-          value: RECIPIENT
-          
         FIRST_NAME:
           source: json
           path: $.recipient.firstName
@@ -181,7 +106,7 @@ txn:
           source: json
           path: $.recipient.phone
           required: false
-          
+            
         CITY:
           source: json
           path: $.recipient.city
@@ -226,34 +151,3 @@ txn:
           source: json
           path: $.recipient.address.postalCode
           required: true
-    
-    TRANSACTION_DETAIL:
-      detail:
-        PAYMENT_REF:
-          source: json
-          path: $.paymentReference
-          required: true
-          
-        FUNDING_SOURCE:
-          source: json
-          path: $.fundingSource
-          required: true
-          validation:
-            allowed: 
-              - CREDIT_CARD
-              - DEBIT_CARD
-              - BANK_ACCOUNT
-              - UPI
-              - WALLET
-              
-        PAYMENT_TYPE:
-          source: json
-          path: $.paymentType
-          required: true
-          validation:
-            allowed:
-              - ONLINE
-              - OFFLINE
-              - RECURRING
-              - INSTANT
-              - WIRE_TRANSFER
