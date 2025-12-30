@@ -26,154 +26,125 @@ management:
         
 txn:
   mappings:
-    # ========== SENDER MAPPINGS (Parent Party) ==========
+
+    # ================= SENDER PARTY MAPPING =================
     sender:
       party:
         FIRST_NAME:
           source: json
           path: $.sender.firstName
           required: true
-          validation:
-            maxLength: 80
-            
+
         LAST_NAME:
           source: json
           path: $.sender.lastName
           required: true
-          validation:
-            maxLength: 80
-            
+
         EMAIL:
           source: json
           path: $.sender.email
           required: true
           validation:
             pattern: "^[A-Za-z0-9+_.-]+@(.+)$"
-            
+
         PHONE:
           source: json
           path: $.sender.phone
           required: false
-            
+
         CITY:
           source: json
           path: $.sender.city
           required: false
-          
+
         COUNTRY:
           source: json
           path: $.sender.country
           required: true
 
-      address:
-        ADDR_TYPE:
-          source: constant
-          value: SENDER_BILLING
-          
-        STREET_LINE_1:
-          source: json
-          path: $.sender.address.streetLine1
-          required: true
-          validation:
-            maxLength: 250
-            
-        STREET_LINE_2:
-          source: json
-          path: $.sender.address.streetLine2
-          required: false
-          validation:
-            maxLength: 250
-            
-        CITY:
-          source: json
-          path: $.sender.address.city
-          required: true
-          
-        STATE:
-          source: json
-          path: $.sender.address.state
-          required: true
-          
-        COUNTRY:
-          source: json
-          path: $.sender.address.country
-          required: true
-          
-        POSTAL_CODE:
-          source: json
-          path: $.sender.address.postalCode
-          required: true
-
-    # ========== RECIPIENT MAPPINGS (Child Party) ==========
+    # ================= RECIPIENT PARTY MAPPING =================
     recipient:
       party:
         FIRST_NAME:
           source: json
           path: $.recipient.firstName
           required: true
-          validation:
-            maxLength: 80
-            
+
         LAST_NAME:
           source: json
           path: $.recipient.lastName
           required: true
-          validation:
-            maxLength: 80
-            
+
         EMAIL:
           source: json
           path: $.recipient.email
           required: true
           validation:
             pattern: "^[A-Za-z0-9+_.-]+@(.+)$"
-            
+
         PHONE:
           source: json
           path: $.recipient.phone
           required: false
-            
+
         CITY:
           source: json
           path: $.recipient.city
           required: false
-          
+
         COUNTRY:
           source: json
           path: $.recipient.country
           required: true
 
-      address:
+    # ================= TWO ADDRESS TABLE ENTRIES =================
+    address:
+      sender:
+        ID:
+          source: generated
+        ADDR_TYPE:
+          source: constant
+          value: SENDER_BILLING
+        STREET_LINE_1:
+          source: json
+          path: $.sender.address.streetLine1
+        STREET_LINE_2:
+          source: json
+          path: $.sender.address.streetLine2
+        CITY:
+          source: json
+          path: $.sender.address.city
+        STATE:
+          source: json
+          path: $.sender.address.state
+        COUNTRY:
+          source: json
+          path: $.sender.address.country
+        POSTAL_CODE:
+          source: json
+          path: $.sender.address.postalCode
+
+      recipient:
+        ID:
+          source: generated
         ADDR_TYPE:
           source: constant
           value: RECIPIENT_SHIPPING
-          
         STREET_LINE_1:
           source: json
           path: $.recipient.address.streetLine1
-          required: true
-          
         STREET_LINE_2:
           source: json
           path: $.recipient.address.streetLine2
-          required: false
-          
         CITY:
           source: json
           path: $.recipient.address.city
-          required: true
-          
         STATE:
           source: json
           path: $.recipient.address.state
-          required: true
-          
         COUNTRY:
           source: json
           path: $.recipient.address.country
-          required: true
-          
         POSTAL_CODE:
           source: json
           path: $.recipient.address.postalCode
-          required: true
